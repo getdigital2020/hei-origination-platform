@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Investor {
+  id           String           @id @default(cuid())
+  name         String
+  contactInfo  String?
+  designs      ContractDesign[]
+  applications Application[]
+}
+
+model ContractDesign {
+  id         String   @id @default(cuid())
+  investor   Investor @relation(fields: [investorId], references: [id])
+  investorId String
+
+  name                 String
+  termYears            Int
+  investorCap          Float
+  multiplier           Float
+  minInvestmentAmt     Float
+  maxInvestmentAmt     Float
+  maxInvestmentPct     Float
+  highestInvestmentAmt Float?
+
+  offers Offer[]
+}
+
+model Application {
+  id                   String      @id @default(cuid())
+  heaOptionAgreementNo String      @unique
+  offerDate            DateTime
+  investorName         String
+  applicants           Applicant[]
+  property             Property?
+  offers               Offer[]
+  closings             Closing[]
+  documents            Document[]
+  createdAt            DateTime    @default(now())
+
+  investorId String?
+  investor   Investor? @relation(fields: [investorId], references: [id])
+
+  submissions Submission[]
+  Note        Note[]
+}
+
+model Applicant {
+  id            String      @id @default(cuid())
+  applicationId String
+  fullName      String
+  type          String // "Applicant" or "Co-Applicant"
+  application   Application @relation(fields: [applicationId], references: [id])
+}
+
+model Property {
+  id                 String      @id @default(cuid())
+  applicationId      String      @unique
+  addressLine1       String
+  addressLine2       String?
+  city               String
+  state              String
+  zip                String
+  occupancyType      String
+  beginningHomeValue Float
+  application        Application @relation(fields: [applicationId], references: [id])
+}
+
+model Offer {
+  id               String         @id @default(cuid())
+  applicationId    String
+  contractDesignId String
+  application      Application    @relation(fields: [applicationId], references: [id])
+  contractDesign   ContractDesign @relation(fields: [contractDesignId], references: [id])
+
+  // copied snapshot from design
+  termYears            Int
+  investorCap          Float
+  multiplier           Float
+  minInvestmentAmt     Float
+  maxInvestmentAmt     Float
+  maxInvestmentPct     Float
+  highestInvestmentAmt Float?
+
+  // deal-specific
+  optionPurchasePremiumPaidToOwner Float
+  optionPurchasePremiumPct         Float
+  investorOptionPercentage         Float
+  totalEstimatedPayoffsAtClosing   Float
+  additionalClosingCosts           Float
+  specifiedValuation               String?
+  gridHighestInvestment            Float?
+  gridLowestInvestment             Float?
+
+  // ✅ New field
+  isActive    Boolean   @default(false)
+  activatedAt DateTime? // timestamp of when it was activated
+  createdAt   DateTime  @default(now()) // ✅ NEW
+}
+
+model Closing {
+  id                            String      @id @default(cuid())
+  applicationId                 String
+  dateIssued                    DateTime
+  effectiveDate                 DateTime
+  disbursementDate              DateTime
+  settlementAgent               String
+  escrowAccountNo               String?
+  transactionFeePctFinal        Float
+  optionPurchasePremiumFinal    Float
+  appraisalFeeTo                String?
+  creditReportFeeTo             String?
+  floodCertificationFeeTo       String?
+  titlePolicyFeeTo              String?
+  taxServiceFeeTo               String?
+  titleEscrowFeeTo              String?
+  titleNotaryFeeTo              String?
+  notaryFeeTo                   String?
+  additionalFee                 Float?
+  payoffsAtClosing              Float?
+  homeownerPaymentsAfterClosing Float?
+  application                   Application @relation(fields: [applicationId], references: [id])
+}
+
+model Document {
+  id            String      @id @default(cuid())
+  applicationId String
+  type          String // e.g. "Driver's License", "Mortgage Statement"
+  url           String? // S3 or local file path
+  createdAt     DateTime    @default(now())
+  application   Application @relation(fields: [applicationId], references: [id])
+}
+
+model DailySequence {
+  id        String   @id @default(cuid())
+  dateKey   String   @unique
+  counter   Int      @default(0)
+  updatedAt DateTime @updatedAt
+}
+
+model Submission {
+  id              Int              @id @default(autoincrement())
+  applicantName   String
+  coApplicantName String?
+  propertyAddress String
+  email           String
+  phone           String
+  createdAt       DateTime         @default(now())
+  status          SubmissionStatus @default(NEW)
+
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+}
+
+enum SubmissionStatus {
+  NEW
+  REVIEWED
+  PROMOTED
+  REJECTED
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Optional relations
+  applicationId String?
+  application   Application? @relation(fields: [applicationId], references: [id])
+}

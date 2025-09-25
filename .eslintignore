@@ -1,0 +1,24 @@
+# Ignore dependencies
+node_modules
+
+# Ignore Next.js build output
+.next
+out
+
+# Ignore production / distribution builds
+dist
+build
+
+# Ignore coverage reports
+coverage
+
+# Ignore Prisma migrations (generated SQL)
+prisma/migrations
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore logs
+*.log

@@ -1,0 +1,17 @@
+# Ignore artifacts
+node_modules
+.next
+dist
+coverage
+build
+
+# Ignore lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Ignore generated files
+prisma/migrations
+
+# Logs
+*.log

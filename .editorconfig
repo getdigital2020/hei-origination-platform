@@ -1,0 +1,45 @@
+# EditorConfig helps maintain consistent coding styles across editors and IDEs
+root = true
+
+# Default settings for all files
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Indentation
+indent_style = space
+indent_size = 2
+
+# Markdown files — keep trailing spaces for line breaks
+[*.md]
+trim_trailing_whitespace = false
+
+# Windows batch files should keep CRLF
+[*.{bat,cmd}]
+end_of_line = crlf
+
+# Prisma schema
+[*.prisma]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+
+# SQL migrations
+[*.sql]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+
+# JSON, YAML, and config files
+[*.{json,yml,yaml}]
+indent_style = space
+indent_size = 2
+end_of_line = lf
+
+# TypeScript / JavaScript
+[*.{ts,tsx,js,jsx}]
+indent_style = space
+indent_size = 2
+end_of_line = lf

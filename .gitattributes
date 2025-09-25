@@ -1,23 +1,33 @@
+# Auto-detect text files and normalize line endings
 * text=auto
 
-*.ts   text eol=lf
-*.tsx  text eol=lf
-*.prisma text eol=lf
-*.sh   text eol=lf
-*.yml  text eol=lf
-*.yaml text eol=lf
-*.json text eol=lf
-*.md   text eol=lf
-*.sql  text eol=lf
+# TypeScript & Prisma files → LF
+*.ts      text eol=lf
+*.tsx     text eol=lf
+*.prisma  text eol=lf
 
-*.bat  text eol=crlf
-*.cmd  text eol=crlf
+# Prisma migrations (SQL) → LF
+*.sql     text eol=lf
 
-*.png binary
-*.jpg binary
-*.jpeg binary
-*.gif binary
-*.ico binary
-*.pdf binary
-*.exe binary
-*.dll binary
+# Config & data files → LF
+*.yml     text eol=lf
+*.yaml    text eol=lf
+*.json    text eol=lf
+*.md      text eol=lf
+
+# Shell scripts → LF
+*.sh      text eol=lf
+
+# Windows batch scripts → CRLF
+*.bat     text eol=crlf
+*.cmd     text eol=crlf
+
+# Binary files (no line ending normalization)
+*.png     binary
+*.jpg     binary
+*.jpeg    binary
+*.gif     binary
+*.ico     binary
+*.pdf     binary
+*.exe     binary
+*.dll     binary

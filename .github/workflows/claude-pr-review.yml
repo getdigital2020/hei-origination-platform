@@ -1,13 +1,20 @@
+# Claude PR Review + Security Scan — auto-reviews every PR
+# Installed by Project Hub for Tier 3+ projects
+# Setup: Add ANTHROPIC_API_KEY to repository secrets
+#        Install Claude GitHub App: https://github.com/apps/claude
+
 name: Claude PR Review
 on:
   pull_request:
     types: [opened, synchronize]
+
 jobs:
   review:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -16,9 +23,20 @@ jobs:
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
           prompt: |
-            Review this PR against the standards in CLAUDE.md.
-            Focus on: security > financial data handling > accessibility > error handling > code quality.
-            Be specific about file and line numbers.
+            Review this PR against our project standards in CLAUDE.md.
+
+            Focus areas (in priority order):
+            1. Security — input validation, auth checks, no secrets in code
+            2. Accessibility — semantic HTML, ARIA, keyboard nav, focus management
+            3. Error handling — graceful degradation, meaningful messages
+            4. Test coverage — new code has tests, edge cases covered
+            5. Code quality — DRY, SOLID, separation of concerns
+
+            For each issue found, use inline comments on the specific lines.
+            Post a summary comment with overall assessment.
+          claude_args: |
+            --allowedTools "Read,Grep,Glob,Bash(gh pr comment:*),mcp__github_inline_comment__create_inline_comment"
+
   security:
     runs-on: ubuntu-latest
     permissions:
@@ -27,7 +45,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
       - uses: anthropics/claude-code-security-review@main
         with:
-          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          comment-pr: true
+          claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}

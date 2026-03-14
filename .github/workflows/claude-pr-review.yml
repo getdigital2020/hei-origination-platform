@@ -1,6 +1,6 @@
 # Claude PR Review + Security Scan — auto-reviews every PR
 # Installed by Project Hub for Tier 3+ projects
-# Setup: Add ANTHROPIC_API_KEY to repository secrets
+# Setup: Add ANTHROPIC_API_KEY to org secrets (visibility: all)
 #        Install Claude GitHub App: https://github.com/apps/claude
 
 name: Claude PR Review
@@ -14,6 +14,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      id-token: write
     steps:
       - uses: actions/checkout@v4
         with:
